@@ -52,10 +52,11 @@ public class HawkFeature implements DynamicFeature {
 			if (annotation.annotationType() == HawkProtected.class) {
 
 				HawkProtected hp = (HawkProtected) annotation;
+                String realm = hp.realm();
 				boolean validateRequestPayload = hp.validateRequestPayload();
 				boolean hashResponsePayload = hp.hashResponsePayload();
 
-				fc.register(new HawkServerFilter(hawkProvider,
+				fc.register(new HawkServerFilter(hawkProvider, realm,
 						validateRequestPayload, hashResponsePayload));
 			}
 		}

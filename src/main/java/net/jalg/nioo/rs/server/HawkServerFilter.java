@@ -47,6 +47,8 @@ public class HawkServerFilter implements ContainerRequestFilter,
 
     private HawkServerProvider hawkProvider;
 
+    private String realm;
+
     private final boolean validateRequestPayload;
 
     private final boolean hashResponsePayload;
@@ -61,20 +63,45 @@ public class HawkServerFilter implements ContainerRequestFilter,
     /**
      * Create a new instance of the Hawk server filter.
      *
+     * The 401 challenge will not include a realm.
+     *
      * @param hawkProvider
      * @param validateRequestPayload
      * @param hashResponsePayload
      */
     public HawkServerFilter(HawkServerProvider hawkProvider,
                             boolean validateRequestPayload, boolean hashResponsePayload) {
+        this(hawkProvider,null,validateRequestPayload,hashResponsePayload);
+    }
+
+    /**
+     * Create a new instance of the Hawk server filter with a specific realm.
+     *
+     * The provided realm will be used in 401 responses as part of the
+     * challenge.
+     *
+     * @param hawkProvider
+     * @param realm
+     * @param validateRequestPayload
+     * @param hashResponsePayload
+     */
+    public HawkServerFilter(HawkServerProvider hawkProvider, String realm,
+                            boolean validateRequestPayload, boolean hashResponsePayload) {
+        this.realm = realm;
         this.hawkProvider = hawkProvider;
         this.validateRequestPayload = validateRequestPayload;
         this.hashResponsePayload = hashResponsePayload;
     }
 
     private Response createDefault401Response() {
+        String value = HawkContext.SCHEME;
+        if(realm != null) {
+            value += " realm=\"" + realm + "\"";
+        }
+
         return Response.status(Status.UNAUTHORIZED)
-                .header(HttpHeaders.WWW_AUTHENTICATE, HawkContext.SCHEME)
+
+                .header(HttpHeaders.WWW_AUTHENTICATE, value)
                 .type("text/plain").entity("Unable to authorize request.")
                 .build();
     }
@@ -130,7 +157,7 @@ public class HawkServerFilter implements ContainerRequestFilter,
          */
         HawkCredentials credentials = null;
         try {
-            credentials = hawkProvider.getHawkCredentials(authHeader.getId());
+            credentials = hawkProvider.getHawkCredentials(realm,authHeader.getId());
         } catch (HawkProviderException e) {
             LOG.log(Level.SEVERE, "Unable to get hawk credentials for Hawk ID: " + authHeader.getId(), e);
             requestContext.abortWith(create500Response());

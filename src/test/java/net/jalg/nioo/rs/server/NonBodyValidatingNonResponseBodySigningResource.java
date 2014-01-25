@@ -15,7 +15,7 @@ public class NonBodyValidatingNonResponseBodySigningResource {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @HawkProtected(validateRequestPayload = false,hashResponsePayload = false)
+    @HawkProtected(realm = "test" , validateRequestPayload = false,hashResponsePayload = false)
     public String get() {
         return "Test";
     }

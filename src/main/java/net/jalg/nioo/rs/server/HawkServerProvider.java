@@ -31,11 +31,12 @@ public interface HawkServerProvider {
      *    during the lookup then an exception will be thrown.
      * </p>
      *
+     * @param realm The protection space (can be null)
      * @param id The id of the credentials to look up
      * @return HawkCredentials belonging to the given ID or null if no credentials for this ID have been found.
      * @throws HawkProviderException
      */
-    public HawkCredentials getHawkCredentials(String id) throws HawkProviderException;
+    public HawkCredentials getHawkCredentials(String realm, String id) throws HawkProviderException;
 
     /** Note a used nonce with the provider.
      *

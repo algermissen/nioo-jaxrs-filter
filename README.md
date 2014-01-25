@@ -3,9 +3,27 @@ nioo-jaxrs-filter
 
 JAX-RS 2 Filter for Hawk-based access delegation.
 
+JAX-RS 2 resource methods are protected by attaching the @HawkProtected annotation:
 
-Implementing The HawkProvider Interface
-=======================================
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @HawkProtected(realm="test", validateRequestPayload = false,hashResponsePayload = true)
+    public String get(@Context SecurityContext sc) {
+
+        Principal p = sc.getUserPrincipal();
+
+        return "This response body will be hashed and added to " +
+               "the Server-Authorization response header";
+    }
+
+
+Note how the injected SecurityContext provides access to the Hawk ID.
+
+
+
+
+Implementing HawkProvider
+=========================
 
 The filter requires an instance of an implementation of the HawkProvider interface.
 This HawkProvider instance provides the filter with access to the credentials,
@@ -25,7 +43,8 @@ nonce checking and configuration options.
         }
 
         @Override
-        public HawkCredentials getHawkCredentials(String id) throws HawkProviderException {
+        public HawkCredentials getHawkCredentials(String realm, String id) throws HawkProviderException {
+            // (Maybe pick identity store based on realm)
             Identity identity = identityService.lookupIdentity(id);
             return new MyCredentials(identity));
         }
@@ -80,7 +99,7 @@ resource and configure the body validation and hashing parameters:
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @HawkProtected(validateRequestPayload = false,hashResponsePayload = true)
+    @HawkProtected(realm="test",validateRequestPayload = false,hashResponsePayload = true)
     public String get() {
         return "This response body will be hashed and added to " +
                "the Server-Authorization response header";
@@ -89,7 +108,7 @@ resource and configure the body validation and hashing parameters:
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    @HawkProtected(validateRequestPayload = true,hashResponsePayload = false)
+    @HawkProtected(realm="test",validateRequestPayload = true,hashResponsePayload = false)
     public String post(@Context SecurityContext sc, String body) {
 
         // the filter will have verified that body has not been tampered with

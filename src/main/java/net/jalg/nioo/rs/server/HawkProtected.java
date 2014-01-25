@@ -15,6 +15,13 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface HawkProtected {
 
+    /** This attribute specifies the realm the given resource method resides in.
+     * It will be used in the 401 challenges.
+     *
+     * @return
+     */
+    String realm();
+
     /**
      * This attribute controls whether the filter should validate the request payload.
      *

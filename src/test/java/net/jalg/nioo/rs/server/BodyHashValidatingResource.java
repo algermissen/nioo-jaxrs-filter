@@ -19,7 +19,7 @@ public class BodyHashValidatingResource {
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    @HawkProtected(validateRequestPayload = true,hashResponsePayload = false)
+    @HawkProtected(realm = "test" , validateRequestPayload = true,hashResponsePayload = false)
     public String post(@Context SecurityContext sc, String body) {
 
         return body + ":" + sc.getUserPrincipal().getName();

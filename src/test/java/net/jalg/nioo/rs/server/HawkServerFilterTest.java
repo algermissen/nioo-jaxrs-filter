@@ -143,7 +143,7 @@ public class HawkServerFilterTest {
         }
 
         @Override
-        public HawkCredentials getHawkCredentials(String id) throws HawkProviderException {
+        public HawkCredentials getHawkCredentials(String realm,String id) throws HawkProviderException {
             return new TestCredentials(new TestProvidedUser(id));
         }
 
