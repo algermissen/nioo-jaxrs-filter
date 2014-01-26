@@ -310,6 +310,8 @@ public class HawkServerFilter implements ContainerRequestFilter,
             LOG.log(Level.SEVERE, "Payload hashes do not match");
             throw new WebApplicationException(createDefault401Response());
         }
+
+        // FIXME See https://github.com/algermissen/hawkj/issues/15
         return entity;
     }
 

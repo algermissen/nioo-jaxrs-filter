@@ -1,5 +1,7 @@
 package net.jalg.nioo.rs.server;
 
+import javax.validation.constraints.AssertTrue;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -7,9 +9,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import net.jalg.hawkj.Algorithm;
-import net.jalg.hawkj.AuthorizationHeader;
-import net.jalg.hawkj.HawkContext;
+import net.jalg.hawkj.*;
+import net.jalg.hawkj.HawkContext.HawkContextBuilder;
 import net.jalg.hawkj.util.Charsets;
 import org.glassfish.grizzly.http.server.HttpServer;
 
@@ -21,8 +22,11 @@ import org.junit.Test;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.logging.Level;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Jan Algermissen <algermissen@acm.org>
@@ -126,6 +130,32 @@ public class HawkServerFilterTest {
         Response response = target.request().header("Authorization", ah.toString()).post(Entity.text(body));
 
         assertEquals(401,response.getStatus());
+
+    }
+
+    @Test
+    public void testThatFilterAddsCorrectResponseBodyHash() throws AuthHeaderParsingException {
+        WebTarget target = baseTarget.path(UriBuilder.fromResource(ResponseBodySigningResource.class).build().getPath());
+        HawkContext hc = HawkContext.request("GET", target.getUri().getPath(), HOST, PORT).credentials(ID, PWD, ALGORITHM).build();
+        AuthorizationHeader ah = hc.createAuthorizationHeader();
+
+        Response response = target.request().header("Authorization", ah.toString()).get();
+        assertEquals(200,response.getStatus());
+
+        AuthorizationHeader resAh =  AuthorizationHeader.authorization(
+                    response.getHeaderString(HawkContext.SERVER_AUTHORIZATION));
+
+        String body = response.readEntity(String.class);
+        assertEquals("Test",body);
+
+        String contentType = response.getMediaType().toString();
+        assertEquals("text/plain",contentType);
+
+        String hash = HawkContextBuilder.generateHash(hc.getAlgorithm(), body.getBytes(Charsets.UTF_8), contentType);
+
+        assertTrue(Util.fixedTimeEqual(hash, resAh.getHash()));
+
+        // FIXME See https://github.com/algermissen/hawkj/issues/15
 
     }
 

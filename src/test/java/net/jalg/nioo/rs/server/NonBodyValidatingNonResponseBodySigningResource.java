@@ -10,7 +10,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-@Path("bodyHashValidatingResource")
+@Path("nonBodyValidatingNonResponseBodySigningResource")
 public class NonBodyValidatingNonResponseBodySigningResource {
 
     @GET
