@@ -10,7 +10,7 @@ JAX-RS 2 resource methods are protected by attaching the @HawkProtected annotati
     @HawkProtected(realm="test", validateRequestPayload = false,hashResponsePayload = true)
     public String get(@Context SecurityContext sc) {
 
-        Principal p = sc.getUserPrincipal();
+        String id = sc.getUserPrincipal().getName();
 
         return "This response body will be hashed and added to " +
                "the Server-Authorization response header";
