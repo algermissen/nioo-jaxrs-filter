@@ -19,7 +19,11 @@ JAX-RS 2 resource methods are protected by attaching the @HawkProtected annotati
 
 Note how the injected SecurityContext provides access to the Hawk ID.
 
+Status
+======
 
+This is an initial release of the filter package, not yet tested in production environments.
+The API is reasonably stable but might change until reaching 1.0.
 
 
 Implementing HawkProvider
@@ -114,6 +118,8 @@ resource and configure the body validation and hashing parameters:
         // the filter will have verified that body has not been tampered with
         return "Hello";
     }
+
+
 
 
 
