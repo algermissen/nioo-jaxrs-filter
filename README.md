@@ -1,7 +1,7 @@
 nioo-jaxrs-filter
 =================
 
-JAX-RS 2 Filter for Hawk-based access delegation.
+JAX-RS 2 Filter for Hawk-based authentication.
 
 JAX-RS 2 resource methods are protected by attaching the @HawkProtected annotation:
 
