@@ -18,7 +18,7 @@
       <dependency>
         <groupId>net.jalg</groupId>
         <artifactId>hawkj</artifactId>
-        <version>1.0</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>net.jalg</groupId>

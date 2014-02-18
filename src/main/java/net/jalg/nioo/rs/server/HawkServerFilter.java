@@ -205,7 +205,7 @@ public class HawkServerFilter implements ContainerRequestFilter,
         int now = (int) (System.currentTimeMillis() / 1000L);
         int allowedSkew = hawkProvider.getAllowedClockSkew();
 
-        if ((allowedSkew != 0) && (hawk.getTs() < now - allowedSkew) || (hawk.getTs() > now + allowedSkew)) {
+        if ((allowedSkew != 0) && ((hawk.getTs() < now - allowedSkew) || (hawk.getTs() > now + allowedSkew))) {
             LOG.log(Level.FINE, "Clock skew too large. Now: {0}, ts: {1}",
                     new String[]{String.valueOf(now), String.valueOf(hawk.getTs())});
             HawkWwwAuthenticateContext c = HawkWwwAuthenticateContext.ts()
